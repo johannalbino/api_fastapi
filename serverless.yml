@@ -1,0 +1,31 @@
+service: api-fastapi
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-east-1
+  stage: ${opt:stage, "prod"}
+
+plugins:
+  - serverless-python-requirements
+
+functions:
+  app:
+    package:
+      exclude:
+        - "package.json"
+        - "package-lock.json"
+        - ".serverless/**"
+        - ".virtualenv/**"
+        - "node_modules/**"
+    handler: app.handler
+    environment:
+      STAGE: ${self:provider.stage}
+      ENVIRONMENT: "prod"
+    events:
+      - http:
+          method: any
+          path: /{proxy+}
